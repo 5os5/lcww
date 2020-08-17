@@ -524,8 +524,8 @@ class adminCog(commands.Cog):
 		else:
 			admin_command_list : str = ""
 			admin_command_list += f"{','.join(commandSetting[36])}\n"   # 분배채널설정
-			admin_command_list += f"{','.join(commandSetting[4])} [아이디]\n"   # 총무등록
-			admin_command_list += f"{','.join(commandSetting[5])} [아이디]\n"   # 총무삭제
+			admin_command_list += f"{','.join(commandSetting[4])} [아이디]\n"   # 관리자등록
+			admin_command_list += f"{','.join(commandSetting[5])} [아이디]\n"   # 관리자삭제
 			
 			manager_command_list : str = ""
 			manager_command_list += f"{','.join(commandSetting[0])}  ※ 관리자권한도 필요\n"   # 혈원데이터초기화
@@ -595,7 +595,7 @@ class adminCog(commands.Cog):
 					color=0xff00ff
 					)
 			embed.add_field(name = f"⚙️ [ 관리자 전용 명령어 ]", value = f"```css\n{admin_command_list}```", inline = False)
-			embed.add_field(name = f"🤴 [ 총무 전용 명령어 ]", value = f"```css\n{manager_command_list}```", inline = False)
+			embed.add_field(name = f"🤴 [ 관리자 전용 명령어 ]", value = f"```css\n{manager_command_list}```", inline = False)
 			embed.add_field(name = f"🧑 [ 일반 명령어 ]", value = f"```css\n{member_command_list}```", inline = False)
 			embed.add_field(name = f"🔧 [ 기타 명령어 ]", value = f"```css\n{etc_command_list}```", inline = False)
 			embed.set_footer(text = f"※ '분배완료'된 것 중 30일이 지난 건은 자동으로 삭제\n    '미입력' 상태의 등록건만 수정 가능\n    '분배중' 상태의 등록건만 정산 가능\n    거래소세금 : 미입력시 {basicSetting[7]}%")
@@ -856,7 +856,7 @@ class memberCog(commands.Cog):
 		self.guild_db = self.bot.db.jungsan.guild
 		self.guild_db_log = self.bot.db.jungsan.guild_log
 
-	################ 총무등록 ################ 
+	################ 관리자 등록 ################ 
 	@commands.has_permissions(manage_guild=True)
 	@commands.command(name=commandSetting[4][0], aliases=commandSetting[4][1:])
 	async def set_manager(self, ctx, *, args : str = None):
@@ -873,11 +873,11 @@ class memberCog(commands.Cog):
 
 		result = self.member_db.update_one({"game_ID":member_data["game_ID"]}, {"$set":{"permissions":"manager"}}, upsert = True)
 		if result.raw_result["nModified"] < 1 and "upserted" not in result.raw_result:
-			return await ctx.send(f"{ctx.author.mention}, 총무 등록 실패.")   
+			return await ctx.send(f"{ctx.author.mention}, 관리자 등록 실패.")   
 
-		return  await ctx.send(f"**[{args}]**님을 총무로 등록 하였습니다.")
+		return  await ctx.send(f"**[{args}]**님을 관리자로 등록 하였습니다.")
 
-	################ 총무삭제 ################ 
+	################ 관리자삭제 ################ 
 	@commands.has_permissions(manage_guild=True)
 	@commands.command(name=commandSetting[5][0], aliases=commandSetting[5][1:])
 	async def delete_manager(self, ctx, *, args : str = None):
@@ -894,9 +894,9 @@ class memberCog(commands.Cog):
 
 		result = self.member_db.update_one({"game_ID":member_data["game_ID"]}, {"$set":{"permissions":"member"}}, upsert = True)
 		if result.raw_result["nModified"] < 1 and "upserted" not in result.raw_result:
-			return await ctx.send(f"{ctx.author.mention}, 총무 삭제 실패.")   
+			return await ctx.send(f"{ctx.author.mention}, 관리자 삭제 실패.")   
 
-		return  await ctx.send(f"**[{args}]**님을 총무에서 삭제 하였습니다.")
+		return  await ctx.send(f"**[{args}]**님을 관리자에서 삭제 하였습니다.")
 
 	################ 혈원목록 확인 ################ 
 	@commands.command(name=commandSetting[6][0], aliases=commandSetting[6][1:])
@@ -945,9 +945,9 @@ class memberCog(commands.Cog):
 		color=0x00ff00
 		)
 		if len(manager_list) == 0:
-			embed.add_field(name = f"**🤴 총무**",value = f"**```cs\n등록된 총무가 없습니다.```**")
+			embed.add_field(name = f"**🤴 관리자**",value = f"**```cs\n등록된 관리자가 없습니다.```**")
 		else:
-			embed.add_field(name = f"**🤴 총무**",value = f"**```cs\n{manager_list}```**")
+			embed.add_field(name = f"**🤴 관리자**",value = f"**```cs\n{manager_list}```**")
 		if len(member_list) == 0:
 			embed.add_field(name = f"**🧑 혈원**",value = f"**```cs\n등록된 혈원이 없습니다.```**", inline = False)
 		else:
@@ -955,7 +955,7 @@ class memberCog(commands.Cog):
 		embed.add_field(name = f"**👤 혈원수**",value = f"**```fix\n{len(sorted_member_document)}```**")
 		embed.add_field(name = f"**🏦 잔고**",value = f"**```fix\n{total_account}```**")
 		embed.add_field(name = f"**💰 혈비**",value = f"**```fix\n{remain_guild_money}```**")
-		#embed.set_footer(text = f"👑 표시는 총무!")
+		#embed.set_footer(text = f"👑 표시는 관리자!")
 		return await ctx.send(embed = embed)
 
 	################ 혈원아이디 등록 ################ 
@@ -1507,7 +1507,8 @@ class manageCog(commands.Cog):
 					detail_title_info = f"[ 순번 : {jungsan_data['_id']} ] | {jungsan_data['getdate'].strftime('%y-%m-%d')} | {jungsan_data['boss']} | {jungsan_data['item']} | {jungsan_data['toggle']} | 혈비적립완료\n[ 등록자 : {jungsan_data['regist']} ]"
 					detail_info = f"~~```fix\n[ 혈비적립 ]```~~"
 			elif jungsan_data['bank_money_insert']:
-				detail_title_info = f"[ 순번 : {jungsan_data['_id']} ] | {jungsan_data['getdate'].strftime('%y-%m-%d')} | {jungsan_data['boss']} | {jungsan_data['item']} | {jungsan_data['toggle']} | 은행저축완료\n[ 등록자 : {jungsan_data['regist']} ]"
+				detail_title_info = f"[ 순번 : {jungsan_data['_id']} ] | {jungsan_data['getdate'].strftime('%y-%m-%d')} | {jungsan_data['boss']} | {jungsan_data['item']} | {jungsan_data['toggle']} | 은행
+				완료\n[ 등록자 : {jungsan_data['regist']} ]"
 				detail_info = f"~~```fix\n[ 은행저축 ]```~~"
 			else:
 				if jungsan_data['itemstatus'] == "분배중":
