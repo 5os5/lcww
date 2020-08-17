@@ -3262,6 +3262,7 @@ class bankCog(commands.Cog):
 		return await ctx.send(embed = embed)
 
 	################ 저축 ################ 
+	@is_manager()
 	@commands.command(name=commandSetting[29][0], aliases=commandSetting[29][1:])
 	async def bank_save_money(self, ctx, *, args : str = None):
 		if ctx.message.channel.id != int(basicSetting[6]):
